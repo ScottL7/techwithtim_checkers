@@ -31,7 +31,7 @@ class Game:
                 self.selected.set_selected(False)
                 self.selected = None
                 self.valid_moves = {}
-                # self.select(row, col)
+                # self.select(row, col)  # Not sure if we need this line
 
         piece = self.board.get_piece(row, col)
         if piece != 0 and piece.color == self.turn:
@@ -56,7 +56,6 @@ class Game:
 
     def change_turn(self):
         self.valid_moves = {}
-        # self.selected = None    # Scott - added
         if self.turn == RED:
             self.turn = WHITE
         else:

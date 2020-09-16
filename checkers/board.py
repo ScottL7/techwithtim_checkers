@@ -88,7 +88,7 @@ class Board:
 
                 if last:
                     if step == -1:
-                        row = max(r-3, -1)
+                        row = max(r-3, -1)  # Updated from 0 to -1
                     else:
                         row = min(r+3, ROWS)
                     moves.update(self._traverse_left(r+step, row, step, color, left-1, skipped=last))  # row-1
@@ -120,7 +120,7 @@ class Board:
 
                 if last:
                     if step == -1:
-                        row = max(r-3, -1)
+                        row = max(r-3, -1)  # Updated from 0 to -1
                     else:
                         row = min(r+3, ROWS)
 
@@ -141,8 +141,12 @@ class Board:
             if piece != 0:
                 if piece.color == RED:
                     self.red_remaining -= 1
+                    if piece.king:              # update red king counter
+                        self.red_kings -= 1
                 else:
                     self.white_remaining -= 1
+                    if piece.king:              # update white king counter
+                        self.white_kings -= 1
 
     def winner(self):
         if self.red_remaining <= 0:
@@ -150,4 +154,4 @@ class Board:
         elif self.white_remaining <= 0:
             return RED
         else:
-            None
+            return None

@@ -11,7 +11,7 @@ class Piece:
         self.col = col
         self.color = color
         self.king = False
-        self.selected = False
+        self.selected = False  # Used to highlight selected piece
 
         self.x = 0
         self.y = 0
