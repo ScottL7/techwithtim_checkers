@@ -28,14 +28,14 @@ class Game:
         if self.selected:
             result = self._move(row, col)
             if not result:
-                self.selected.set_selected(False)
+                self.selected.set_selected(False)  # Clears selected piece highlight
                 self.selected = None
                 self.valid_moves = {}
                 # self.select(row, col)  # Not sure if we need this line
 
         piece = self.board.get_piece(row, col)
         if piece != 0 and piece.color == self.turn:
-            piece.set_selected(True)
+            piece.set_selected(True)                # Sets the piece select for highlighting
             self.selected = piece
             self.valid_moves = self.board.get_valid_moves(piece)
             return True
