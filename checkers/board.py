@@ -11,6 +11,7 @@ class Board:
         self.board = []
         self.red_remaining = self.white_remaining = 12
         self.red_kings = self.white_kings = 0
+        self.selected_piece = None
         self.create_board()
 
     def draw_squares(self, win):
@@ -68,6 +69,16 @@ class Board:
         if piece.color == WHITE or piece.king:
             moves.update(self._traverse_left(row+1, min(row+3, ROWS), 1, piece.color, left))
             moves.update(self._traverse_right(row+1, min(row+3, ROWS), 1, piece.color, right))
+
+        if piece.king and moves:
+            # Check each valid move for more valid moves
+            additional_moves = {}
+            for move in moves:
+                row, col = move
+                additional_moves.update(self.get_valid_moves(Piece(row, col, piece.color)))
+            for move in additional_moves:
+                if move not in moves and additional_moves[move]:
+                    moves[move] = additional_moves[move]
 
         return moves
 
