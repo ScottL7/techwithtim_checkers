@@ -11,7 +11,7 @@ class Board:
         self.board = []
         self.red_remaining = self.white_remaining = 12
         self.red_kings = self.white_kings = 0
-        self.selected_piece = None
+        self.select_piece = None
         self.create_board()
 
     def draw_squares(self, win):
@@ -63,23 +63,12 @@ class Board:
         right = piece.col + 1
         row = piece.row
 
-        if piece.color == RED or piece.king:
+        if piece.color == RED or piece.king:  # Check upwards
             moves.update(self._traverse_left(row-1, max(row-3, -1), -1, piece.color, left))
             moves.update(self._traverse_right(row-1, max(row-3, -1), -1, piece.color, right))
-        if piece.color == WHITE or piece.king:
+        if piece.color == WHITE or piece.king: # Check upwards
             moves.update(self._traverse_left(row+1, min(row+3, ROWS), 1, piece.color, left))
             moves.update(self._traverse_right(row+1, min(row+3, ROWS), 1, piece.color, right))
-
-        if piece.king and moves:
-            # Check each valid move for more valid moves
-            additional_moves = {}
-            for move in moves:
-                row, col = move
-                additional_moves.update(self.get_valid_moves(Piece(row, col, piece.color)))
-            for move in additional_moves:
-                if move not in moves and additional_moves[move]:
-                    moves[move] = additional_moves[move]
-
         return moves
 
     def _traverse_left(self, start, stop, step, color, left, skipped=[]):
@@ -99,7 +88,7 @@ class Board:
 
                 if last:
                     if step == -1:
-                        row = max(r-3, -1)  # Updated from 0 to -1
+                        row = max(r-3, -1)
                     else:
                         row = min(r+3, ROWS)
                     moves.update(self._traverse_left(r+step, row, step, color, left-1, skipped=last))  # row-1
@@ -131,7 +120,7 @@ class Board:
 
                 if last:
                     if step == -1:
-                        row = max(r-3, -1)  # Updated from 0 to -1
+                        row = max(r-3, -1)
                     else:
                         row = min(r+3, ROWS)
 
@@ -152,12 +141,8 @@ class Board:
             if piece != 0:
                 if piece.color == RED:
                     self.red_remaining -= 1
-                    if piece.king:              # update red king counter
-                        self.red_kings -= 1
                 else:
                     self.white_remaining -= 1
-                    if piece.king:              # update white king counter
-                        self.white_kings -= 1
 
     def winner(self):
         if self.red_remaining <= 0:
@@ -165,4 +150,12 @@ class Board:
         elif self.white_remaining <= 0:
             return RED
         else:
-            return None
+            None
+
+    def set_selected_piece(self, piece):
+        self.select_piece = piece
+
+    def get_selected_piece(self):
+        return self.select_piece
+
+
