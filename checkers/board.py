@@ -2,7 +2,7 @@
 #   Manages board activities: moving checkers, board state, etc.
 import pygame
 
-from .constants import BLACK, ROWS, RED, SQUARE_SIZE, COLS, WHITE
+from .constants import BLACK, ROWS, RED, SQUARE_SIZE, COLS, WHITE, UP, DOWN
 from .piece import Piece
 
 
@@ -11,7 +11,7 @@ class Board:
         self.board = []
         self.red_remaining = self.white_remaining = 12
         self.red_kings = self.white_kings = 0
-        self.select_piece = None
+        self.selected_piece = None
         self.create_board()
 
     def draw_squares(self, win):
@@ -64,11 +64,11 @@ class Board:
         row = piece.row
 
         if piece.color == RED or piece.king:  # Check upwards
-            moves.update(self._traverse_left(row-1, max(row-3, -1), -1, piece.color, left))
-            moves.update(self._traverse_right(row-1, max(row-3, -1), -1, piece.color, right))
+            moves.update(self._traverse_left(row-1, max(row-3, -1), UP, piece.color, left))
+            moves.update(self._traverse_right(row-1, max(row-3, -1), UP, piece.color, right))
         if piece.color == WHITE or piece.king: # Check upwards
-            moves.update(self._traverse_left(row+1, min(row+3, ROWS), 1, piece.color, left))
-            moves.update(self._traverse_right(row+1, min(row+3, ROWS), 1, piece.color, right))
+            moves.update(self._traverse_left(row+1, min(row+3, ROWS), DOWN, piece.color, left))
+            moves.update(self._traverse_right(row+1, min(row+3, ROWS), DOWN, piece.color, right))
         return moves
 
     def _traverse_left(self, start, stop, step, color, left, skipped=[]):
@@ -79,26 +79,44 @@ class Board:
                 break
             current = self.board[r][left]
             if current == 0:  # an empty square
-                if skipped and not last:
+                if skipped and not last:  # We've jumped before and not currently
                     break
                 elif skipped:
                     moves[(r, left)] = last + skipped
                 else:
-                    moves[(r, left)] = last
+                    moves[(r, left)] = last  # keeping track of last jumped piece at current new valid square
 
-                if last:
-                    if step == -1:
+                if last:  # Did we just jump an opponent's piece before landing on valid square?
+                    # Check valid moves from current valid square
+                    # if selected piece is a king check opposition direction for additional valid moves
+                    if self.selected_piece.king:
+                        last_row = last[0].row
+                        last_col = last[0].col
+                        if step == UP:
+                            step = DOWN
+                            row = min(r + 3, ROWS)
+                        else:
+                            step = UP
+                            row = max(r - 3, -1)
+
+                        if not (r+step == last_row and left - 1 == last_col):
+                            moves.update(self._traverse_left(r+step, row, step, color, left-1, skipped=moves[(r, left)]))
+                        if not (r + step == last_row and left + 1 == last_col):
+                            moves.update(self._traverse_right(r+step, row, step, color, left+1, skipped=moves[(r, left)]))
+                        step = DOWN if step == UP else UP  # Revert back to the original direction
+
+                    if step == UP:
                         row = max(r-3, -1)
                     else:
                         row = min(r+3, ROWS)
-                    moves.update(self._traverse_left(r+step, row, step, color, left-1, skipped=last))  # row-1
+                    moves.update(self._traverse_left(r+step, row, step, color, left-1, skipped=last))
                     moves.update(self._traverse_right(r+step, row, step, color, left+1, skipped=last))
                 break
 
             elif current.color == color:
                 break
             else:
-                last = [current]
+                last = [current]  # We're jumping opponent's piece
 
             left -= 1
         return moves
@@ -118,12 +136,29 @@ class Board:
                 else:
                     moves[(r, right)] = last
 
-                if last:
-                    if step == -1:
-                        row = max(r-3, -1)
-                    else:
-                        row = min(r+3, ROWS)
+                if last:  # Did we just jump an opponent's piece before landing on valid square?
+                    # Check valid moves from current valid square
+                    # if selected piece is a king check opposition direction for additional valid moves
+                    if self.selected_piece.king:
+                        last_row = last[0].row
+                        last_col = last[0].col
+                        if step == UP:
+                            step = DOWN
+                            row = min(r + 3, ROWS)
+                        else:
+                            step = UP
+                            row = max(r - 3, -1)
 
+                        if not (r+step == last_row and right - 1 == last_col):
+                            moves.update(self._traverse_left(r+step, row, step, color, right-1, skipped=moves[(r, right)]))
+                        if not (r + step == last_row and right + 1 == last_col):
+                            moves.update(self._traverse_right(r+step, row, step, color, right+1, skipped=moves[(r, right)]))
+                        step = DOWN if step == UP else UP  # Revert back to the original direction
+
+                    if step == UP:
+                        row = max(r - 3, -1)
+                    else:
+                        row = min(r + 3, ROWS)
                     moves.update(self._traverse_left(r+step, row, step, color, right-1, skipped=last))
                     moves.update(self._traverse_right(r+step, row, step, color, right+1, skipped=last))  # row-1
                 break
@@ -153,9 +188,9 @@ class Board:
             None
 
     def set_selected_piece(self, piece):
-        self.select_piece = piece
+        self.selected_piece = piece
 
     def get_selected_piece(self):
-        return self.select_piece
+        return self.selected_piece
 
 

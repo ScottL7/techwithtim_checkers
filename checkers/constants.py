@@ -13,3 +13,7 @@ GREY = (128, 128, 128)
 GREEN = (0, 255, 0)
 
 CROWN = pygame.transform.scale(pygame.image.load('assets/crown.png'), (44, 25))
+
+# Keeping track of board directions
+DOWN = 1
+UP = -1

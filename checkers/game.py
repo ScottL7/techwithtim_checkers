@@ -25,12 +25,12 @@ class Game:
         self._init()
 
     def select(self, row, col):
-        if self.board.select_piece:
+        if self.board.selected_piece:
             result = self._move(row, col)
             if not result:
                 # self.selected.set_selected(False)
                 # self.selected = None
-                self.board.select_piece.set_selected(False)
+                self.board.selected_piece.set_selected(False)
                 self.board.set_selected_piece(None)
                 self.valid_moves = {}
                 # self.select(row, col)
