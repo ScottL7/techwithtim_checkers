@@ -75,7 +75,8 @@ class Board:
         moves = {}
         last = []
         for r in range(start, stop, step):
-            if left < 0:  # off the board
+            # check off the board or we're back where we started
+            if left < 0 or (r == self.selected_piece.row and left == self.selected_piece.col):
                 break
             current = self.board[r][left]
             if current == 0:  # an empty square
@@ -125,7 +126,8 @@ class Board:
         moves = {}
         last = []
         for r in range(start, stop, step):
-            if right >= COLS:  # off the board
+            # if selected piece is a king check opposition direction for additional valid moves
+            if right >= COLS or (r == self.selected_piece.row and right == self.selected_piece.col):
                 break
             current = self.board[r][right]
             if current == 0:  # an empty square

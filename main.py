@@ -1,13 +1,13 @@
 import sys
 import pygame
 
-from checkers.constants import WIDTH, HEIGHT, SQUARE_SIZE, RED
+from checkers.constants import WIDTH, HEIGHT, SQUARE_SIZE, CAPTION
 from checkers.game import Game
 
 FPS = 60
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Checkers')
+pygame.display.set_caption(CAPTION % "Red")
 
 
 def get_row_col_from_mouse(pos):

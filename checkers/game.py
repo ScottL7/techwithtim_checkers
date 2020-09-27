@@ -1,7 +1,7 @@
 import pygame
 
 from checkers.board import Board
-from checkers.constants import RED, WHITE, BLUE, SQUARE_SIZE
+from checkers.constants import RED, WHITE, BLUE, SQUARE_SIZE, CAPTION
 
 
 class Game:
@@ -64,8 +64,13 @@ class Game:
         # self.selected = None    # Scott - added
         if self.turn == RED:
             self.turn = WHITE
+            color = "White"
         else:
             self.turn = RED
+            color = "Red"
+
+        caption = CAPTION % color
+        pygame.display.set_caption(caption)
 
     def draw_valid_moves(self, moves):
         for move in moves:

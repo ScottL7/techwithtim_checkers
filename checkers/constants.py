@@ -17,3 +17,5 @@ CROWN = pygame.transform.scale(pygame.image.load('assets/crown.png'), (44, 25))
 # Keeping track of board directions
 DOWN = 1
 UP = -1
+
+CAPTION = "Checkers: It's %s player's turn"
